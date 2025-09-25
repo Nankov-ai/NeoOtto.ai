@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeoOtto.ai</title>
+  <link rel="stylesheet" href="index.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
+  <script type="importmap">
+    {
+      "imports": {
+        "@google/genai": "https://esm.sh/@google/genai@^0.7.0",
+        "marked": "https://esm.sh/marked@^15.0.7"
+      }
+    }
+  </script>
+</head>
+<body>
+  <main class="app-container">
+    <header class="app-header">
+      <h1>NeoOtto.ai</h1>
+      <p>Especialista na identificação de oportunidades de negócio, que sirva como base de conhecimento e conselheiro para o futuro.</p>
+    </header>
+    <section id="chat-container" aria-live="polite"></section>
+    <form id="chat-form" aria-label="Chat input form">
+      <textarea id="chat-input" placeholder="Sou gestor numa PME de logística e quero explorar oportunidades com IA. Por onde devo começar?" required></textarea>
+      <button type="submit" aria-label="Send message">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon">
+          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+        </svg>
+      </button>
+    </form>
+  </main>
+  <script type="module" src="index.tsx"></script>
+</body>
+</html>
