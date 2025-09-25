@@ -15,13 +15,6 @@ const sendButton = chatForm.querySelector('button') as HTMLButtonElement;
 const sendButtonIcon = sendButton.innerHTML;
 
 // --- Gemini AI Configuration ---
-const API_KEY = process.env.API_KEY;
-if (!API_KEY) {
-  addErrorMessage('API_KEY is not configured. Please set the API_KEY environment variable.');
-  throw new Error("API_KEY not found");
-}
-
-const ai = new GoogleGenAI({ apiKey: API_KEY });
 const systemInstruction = `Act as an independent AI opportunity consultant, agnostic to any vendor or technology.
 This assistant only responds to prompts directly related to identifying, validating, and prioritizing AI-driven business opportunities. Any unrelated request (technical, legal, personal, general-purpose, or creative content outside AI strategy) must be rejected with a polite refusal.
 
@@ -89,7 +82,7 @@ Follow-up Suggestions (Mandatory)
 After the main response, provide 3 relevant, strategic follow-up questions to guide the user. Format them exactly like this, with no extra text:
 [SUGGESTIONS]
 "Como podemos iniciar um projeto piloto para testar a IA na otimização de rotas?"
-"Quais são os principais fornecedores de tecnologia para esta solução?"
+"Quais são os principais fornecedores de tecnologia para esta solution?"
 "Que tipo de dados internos seriam necessários para treinar um modelo de previsão de procura?"
 [/SUGGESTIONS]
 
@@ -164,12 +157,7 @@ Always provide three additional points not previously mentioned.
 
 Always remain within AI business opportunities — no exceptions.`;
 
-const chat: Chat = ai.chats.create({
-  model: 'gemini-2.5-flash',
-  config: {
-    systemInstruction,
-  },
-});
+let chat: Chat | null = null;
 
 // --- Chat Functions ---
 
@@ -258,7 +246,7 @@ function processAndDisplaySuggestions(fullResponse: string) {
  * @param userMessage - The message to send.
  */
 async function sendMessageAndStreamResponse(userMessage: string) {
-  if (!userMessage) return;
+  if (!userMessage || !chat) return;
 
   // Display user message
   appendMessage('user').textContent = userMessage;
@@ -342,5 +330,30 @@ function displayInitialGreeting() {
 }
 
 // --- Initialization ---
-displayInitialGreeting();
-autoResizeTextarea();
+function initializeApp() {
+    try {
+        const API_KEY = process.env.API_KEY;
+        if (!API_KEY) {
+            throw new Error("A variável de ambiente API_KEY não foi definida.");
+        }
+        const ai = new GoogleGenAI({ apiKey: API_KEY });
+        chat = ai.chats.create({
+            model: 'gemini-2.5-flash',
+            config: {
+                systemInstruction,
+            },
+        });
+        displayInitialGreeting();
+    } catch (error) {
+        console.error("Erro na inicialização da aplicação:", error);
+        const errorContainer = appendMessage('bot');
+        errorContainer.innerHTML = '<strong>Erro de Configuração:</strong> A chave da API (API_KEY) não foi encontrada. Esta aplicação requer que a chave seja configurada no ambiente de hospedagem. Sem ela, o assistente não pode funcionar.';
+
+        chatInput.disabled = true;
+        sendButton.disabled = true;
+        chatInput.placeholder = "Aplicação desativada - API_KEY não configurada.";
+    }
+    autoResizeTextarea();
+}
+
+initializeApp();
