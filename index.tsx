@@ -332,7 +332,9 @@ function displayInitialGreeting() {
 // --- Initialization ---
 function initializeApp() {
     try {
-        const API_KEY = process.env.API_KEY;
+        // Safely access the API key to prevent ReferenceError in browsers
+        const API_KEY = (typeof process !== 'undefined' && process.env) ? process.env.API_KEY : undefined;
+
         if (!API_KEY) {
             throw new Error("A variável de ambiente API_KEY não foi definida.");
         }
